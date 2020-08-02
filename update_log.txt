@@ -1,0 +1,8 @@
+-----------------------
+1:50pm August 2, 2020
+-Added /help cmd w/ command syntaxes
+-Added /ls
+-Added /read
+-Added /version
+-Added python3 subprocess library to replace os.system and capture stdout
+

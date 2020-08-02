@@ -5,7 +5,10 @@
 # @url    : https://github.com/Cisc0-gif
 # @author : Cisc0-gif
 
+vnumber = 1.0
+
 import discord
+import subprocess
 import asyncio
 import logging
 import os
@@ -94,6 +97,8 @@ async def on_guild_channel_update(before, after):
 
 @client.event
 async def on_message(message):
+    files = os.listdir('storage')
+    fileslength = len(files)
     if message.author == client.user:
         return #ignore what bot says in server so no message loop
     channel = message.channel
@@ -105,6 +110,24 @@ async def on_message(message):
         await message.author.send('*DM Initiated*')
     if message.content == "/whoami": #if author types /whoami bot responds with username
         await channel.send(message.author)
+    if message.content == "/ls": #if author types /ls bot responds with contents of /storage directory
+        ls = subprocess.Popen("ls -l storage/", shell=True, stdout=subprocess.PIPE).stdout
+        lsout = ls.read()
+        await channel.send(lsout.decode())
+    if message.content == "/read": # if author types /read bot responds with file selection prompt
+        await channel.send("What file did you want to read?")
+        for i in range(0,fileslength):
+            await channel.send("[" + str(i) + "] " + files[i])
+        await channel.send("Type /filename #")
+        def check(msg):
+            return msg.content.startswith('/filename')
+        message = await client.wait_for('message', check=check)
+        file = message.content[len('/filename'):].strip()
+        readfile = subprocess.Popen("sudo cat storage/" + str(files[int(file)]), shell=True, stdout=subprocess.PIPE).stdout
+        readfileout = readfile.read()
+        await channel.send(readfileout.decode())
+    if message.content == "/version": #if author types /version bot responds with v# of Discordpy-File-Server
+        await channel.send("Discordpy File Server v" + str(vnumber))
     if message.content == "/ulog": #if author types /ulog bot displays updatelog
         try:
             f = open("update_log.txt","r")
@@ -113,5 +136,7 @@ async def on_message(message):
                 await channel.send(contents)
         finally:
             f.close()
+    if message.content == "/help": # if author types /help bot displays all commands
+        await channel.send("====Help Menu====\n/ping           Creates DM w/ user\n/whoami     Returns username\n/ls                Lists files in /storage\n/read           Reads file contents selected by user\n/version      Returns version number for Discordpy File Server\n/ulog           Returns Update Log for Discordpy File Server\n/help           Displays this menu")
 
 client_run()
