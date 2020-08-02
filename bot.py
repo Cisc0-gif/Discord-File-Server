@@ -125,7 +125,8 @@ async def on_message(message):
         file = message.content[len('/filename'):].strip()
         readfile = subprocess.Popen("sudo cat storage/" + str(files[int(file)]), shell=True, stdout=subprocess.PIPE).stdout
         readfileout = readfile.read()
-        await channel.send(readfileout.decode())
+        await message.author.send("*Contents of*: " + str(files[int(file)]))
+        await message.author.send(readfileout.decode())
     if message.content == "/version": #if author types /version bot responds with v# of Discordpy-File-Server
         await channel.send("Discordpy File Server v" + str(vnumber))
     if message.content == "/ulog": #if author types /ulog bot displays updatelog
@@ -137,6 +138,6 @@ async def on_message(message):
         finally:
             f.close()
     if message.content == "/help": # if author types /help bot displays all commands
-        await channel.send("====Help Menu====\n/ping           Creates DM w/ user\n/whoami     Returns username\n/ls                Lists files in /storage\n/read           Reads file contents selected by user\n/version      Returns version number for Discordpy File Server\n/ulog           Returns Update Log for Discordpy File Server\n/help           Displays this menu")
+        await channel.send("====Help Menu====\n/ping           Creates DM w/ user\n/whoami     Returns username\n/ls                Lists files in /storage\n/read           DMs user selected file contents\n/version      Returns version number for Discordpy File Server\n/ulog           Returns Update Log for Discordpy File Server\n/help           Displays this menu")
 
 client_run()
