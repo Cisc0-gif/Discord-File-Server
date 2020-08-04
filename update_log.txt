@@ -6,3 +6,5 @@
 -Added /version
 -Added python3 subprocess library to replace os.system and capture stdout
 
+10:40pm August 3, 2020
+-Added /create, /delete, and /info commands

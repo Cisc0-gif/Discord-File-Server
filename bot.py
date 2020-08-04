@@ -17,7 +17,7 @@ import time
 import sys
 
 client = discord.Client(command_prefix='/', description='Basic Commands')
-TOKEN = ''
+TOKEN = 'NzM3OTIzNDA2MTMzMTk4OTA4.XyEauQ._-cmmJdO8CdkZieYy6ZXbA8xELM'
 
 # Go To https://discordapp.com/developers/applications/ and start a new application for Token
 
@@ -111,11 +111,11 @@ async def on_message(message):
     if message.content == "/whoami": #if author types /whoami bot responds with username
         await channel.send(message.author)
     if message.content == "/ls": #if author types /ls bot responds with contents of /storage directory
-        ls = subprocess.Popen("ls -l storage/", shell=True, stdout=subprocess.PIPE).stdout
+        ls = subprocess.Popen("ls -shl storage/", shell=True, stdout=subprocess.PIPE).stdout
         lsout = ls.read()
         await channel.send(lsout.decode())
-    if message.content == "/read": # if author types /read bot responds with file selection prompt
-        await channel.send("What file did you want to read?")
+    if message.content == "/read": # if author types /read bot responds with file selection prompt for file contents
+        await channel.send("Which file did you want to read?")
         for i in range(0,fileslength):
             await channel.send("[" + str(i) + "] " + files[i])
         await channel.send("Type /filename #")
@@ -127,6 +127,47 @@ async def on_message(message):
         readfileout = readfile.read()
         await message.author.send("*Contents of*: " + str(files[int(file)]))
         await message.author.send(readfileout.decode())
+    if message.content == "/create": # if author types /create bot responds with file selection prompt for file name and contents
+        await channel.send("What do you want the filename to be?")
+        await channel.send("Type /filename filename")
+        def check(msg):
+            return msg.content.startswith('/filename')
+        message = await client.wait_for('message', check=check)
+        filename = message.content[len('/filename'):].strip()
+        os.system("sudo touch storage/" + str(filename))
+        os.system("sudo chmod 777 storage/" + str(filename))
+        await channel.send("What do you want the file contents to be?")
+        await channel.send("Type /contents filecontents")
+        def check(msg):
+            return msg.content.startswith('/contents')
+        message = await client.wait_for('message', check=check)
+        contents = message.content[len('/contents'):].strip()
+        os.system("sudo echo " + str(contents) + " > storage/" + str(filename))
+        await channel.send("*File*: " + str(filename) + " *created!*")
+    if message.content == "/delete": # if author types /delete bot responds with file selection prompt for file name
+        await channel.send("Which file do you want to delete?")
+        for i in range(0,fileslength):
+            await channel.send("[" + str(i) + "] " + files[i])
+        await channel.send("Type /filename #")
+        def check(msg):
+            return msg.content.startswith('/filename')
+        message = await client.wait_for('message', check=check)
+        file = message.content[len('/filename'):].strip()
+        os.system("sudo rm storage/" + str(files[int(file)]))
+        await channel.send("*File*: " + str(files[int(file)]) + " *deleted!*")
+    if message.content == "/info": # if author types /info bot responds file selection prompt for file info
+        await channel.send("Which file do you want info on?")
+        for i in range(0,fileslength):
+            await channel.send("[" + str(i) + "]" + files[i])
+        await channel.send("Type /filename #")
+        def check(msg):
+            return msg.content.startswith('/filename')
+        message = await client.wait_for('message', check=check)
+        file = message.content[len('/filename'):].strip()
+        fileinfo = subprocess.Popen('sudo file storage/' + str(files[int(file)]), shell=True, stdout=subprocess.PIPE).stdout
+        fileinfoout = fileinfo.read()
+        await channel.send("*File info of*: " + str(files[int(file)]))
+        await channel.send(fileinfoout.decode())
     if message.content == "/version": #if author types /version bot responds with v# of Discordpy-File-Server
         await channel.send("Discordpy File Server v" + str(vnumber))
     if message.content == "/ulog": #if author types /ulog bot displays updatelog
@@ -138,6 +179,6 @@ async def on_message(message):
         finally:
             f.close()
     if message.content == "/help": # if author types /help bot displays all commands
-        await channel.send("====Help Menu====\n/ping           Creates DM w/ user\n/whoami     Returns username\n/ls                Lists files in /storage\n/read           DMs user selected file contents\n/version      Returns version number for Discordpy File Server\n/ulog           Returns Update Log for Discordpy File Server\n/help           Displays this menu")
+        await channel.send("====Help Menu====\n/ping           Creates DM w/ user\n/whoami    Returns username\n/ls                Lists files in /storage\n/read           DMs user selected file contents\n/version      Returns version number for Discordpy File Server\n/ulog           Returns Update Log for Discordpy File Server\n/help           Displays this menu\n/info            Returns info on file such as type, contents\n/create        Runs user through file creation process\n/delete        Runs user through file deletion process")
 
 client_run()

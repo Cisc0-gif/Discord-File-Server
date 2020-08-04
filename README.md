@@ -2,7 +2,7 @@
 
 The Discord.py File Server is a secure alternative to FTP or SMB file shares by running within the Discord API and transferring files as private direct messages instead of plaintext or ciphertext between 2 systems.  Files are sent to Users instead of IPs thus adding another layer of anonymity and users can view file contents from any of their devices. Access Control and Management is as simple as adding or removing users from the server as well.
 
-**COMING SOON**: /create command to let you create a file and input text, /fileinfo to get filetype information from linux "file" command, file headers in /read
+**COMING SOON**: Discord User file permissions?
 
 ## Usage
 
